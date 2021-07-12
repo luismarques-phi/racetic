@@ -1,0 +1,13 @@
+name: racetic
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.9
+  - xcube_geodb
+  - pandas
+  - geopandas
+  - pandas
+  - boto3
+  - requests-oauthlib
+
