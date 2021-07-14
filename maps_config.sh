@@ -1,8 +1,0 @@
-export AWS_REGION_NAME=
-export AWS_ACCESS_KEY_ID=
-export AWS_SECRET_ACCESS_KEY=
-export AWS_ENDPOINT_URL=
-export EDC_TOKEN_URL=
-export EDC_CLIENT_ID=
-export EDC_CLIENT_SECRET=
-export EDC_BASE_URL=

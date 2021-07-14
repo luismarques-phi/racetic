@@ -1,4 +1,7 @@
+
 import os
+from argparse import ArgumentParser
+from configparser import RawConfigParser
 
 from xcube_geodb.core.geodb import GeoDBClient
 
@@ -6,26 +9,42 @@ from process.geodb_action import GeoDBAction
 from process.product_source import FileSystemSource
 from race_logger import RaceLogger
 
-GEODB_CONFIG_PARAMS = ['GEODB_API_SERVER_PORT', 'GEODB_API_SERVER_URL', 'GEODB_AUTH_AUD', 'GEODB_AUTH_CLIENT_ID',
-                       'GEODB_AUTH_CLIENT_SECRET', 'GEODB_AUTH_DOMAIN']
-
 if __name__ == '__main__':
 
-    logger = RaceLogger(name="main")
-    database = "eodash_stage"
-    table_name = "N3_stage_LM"
-    root_path = '/home/dev/PycharmProjects/racetic/WIP/CNR'
-    filter_extension = '.csv'
-    target_path = '/home/dev/PycharmProjects/racetic/WIP/completed'
-    indicator_key = 'cnr_race_n3_timeseries'
+    # --path /home/dev/PycharmProjects/racetic/WIP/CNR --type .csv --database eodash_stage --table N3_stage_LM --archive /home/dev/PycharmProjects/racetic/WIP/completed --indicator cnr_race_n3_timeseries --config /home/dev/PycharmProjects/racetic/timeseries_cred.cfg
 
-    # Assumes GEODB_API_SERVER_PORT, GEODB_API_SERVER_URL, GEODB_AUTH_AUD, GEODB_AUTH_CLIENT_ID, GEODB_AUTH_CLIENT_SECRET, GEODB_AUTH_DOMAIN are present on the environment
-    env_keys = os.environ.keys()
-    for geodb_config in GEODB_CONFIG_PARAMS:
-        if geodb_config not in env_keys:
-            logger.fatal(
-                f'{geodb_config} not configured. Be sure all parameters are configured in the environmemt:{GEODB_CONFIG_PARAMS}')
-            exit(1)
+    logger = RaceLogger(name="main")
+    parser = ArgumentParser()
+
+    parser.add_argument("--path", type=str, help="Specify the path to directory to be processed", required=True)
+    parser.add_argument("--type", type=str, help="Specify the type(extension) of files to be processed",
+                        required=True)
+    parser.add_argument("--database", type=str, help='Specify the GeoDB Database to use', required=True)
+    parser.add_argument("--table", type=str, help='Specify the GeoDB table to use', required=True)
+    parser.add_argument("--archive", type=str,
+                        help='Specify the target folder, for where the files move once processed', required=True)
+    parser.add_argument("--indicator", type=str,
+                        help="Specify the key for which the monitoring system will group the results", required=True)
+
+    parser.add_argument("--config", type=str, help="Specify path to AWS and EDC configurations", required=True)
+
+    args = parser.parse_args()
+    config = RawConfigParser()
+    config.read_file(open(args.config))
+
+    database = args.database
+    table_name = args.table
+    root_path = args.path
+    filter_extension = args.type
+    target_path = args.archive
+    indicator_key = args.indicator
+
+    os.environ["GEODB_API_SERVER_PORT"] = config.get("GEODB", "API_SERVER_PORT")
+    os.environ["GEODB_API_SERVER_URL"] = config.get("GEODB", "API_SERVER_URL")
+    os.environ["GEODB_AUTH_AUD"] = config.get("GEODB", "AUTH_AUD")
+    os.environ["GEODB_AUTH_CLIENT_ID"] = config.get("GEODB", "AUTH_CLIENT_ID")
+    os.environ["GEODB_AUTH_CLIENT_SECRET"] = config.get("GEODB", "AUTH_CLIENT_SECRET")
+    os.environ["GEODB_AUTH_DOMAIN"] = config.get("GEODB", "AUTH_DOMAIN")
 
     action = GeoDBAction(database=database, table_name=table_name, geodb=GeoDBClient())
 
@@ -41,5 +60,3 @@ if __name__ == '__main__':
         os.rename(os.path.join(file.root_location, file.id), os.path.join(target_path, file.id))
 
     logger.info(f'END {indicator_key=}')
-
-    # the processing will be done either called via crontab, or via configuration here, TBD

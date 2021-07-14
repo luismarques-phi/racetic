@@ -79,9 +79,7 @@ class EDCAction(Action):
         bucket = self.aws_bucket
         object_key = os.path.join(self.aws_key_prefix, file.id)
         self.logger.info(f'UPLOADING {file.id=} {path=} {bucket=} {object_key=}')
-        # TODO Uncomment
         # TODO Manage Failure
         with open(path, 'rb') as data:
             self.aws_session.meta.client.upload_fileobj(data, bucket, object_key,
                                                         ExtraArgs={'ACL': 'public-read'})
-        # # self.aws_session.meta.client.upload_file(path, bucket, object_key)
