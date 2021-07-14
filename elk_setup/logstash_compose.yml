@@ -1,0 +1,10 @@
+version: '2.2'
+services:
+  logstash_01:
+    image: docker.elastic.co/logstash/logstash:7.13.3
+    container_name: logstash_01
+    extra_hosts:
+      - "elasticsearch:185.178.84.56"
+    volumes:
+      - /home/dev/PycharmProjects/racetic/elk_setup/pipeline_logstash.conf:/usr/share/logstash/pipeline/pipeline_logstash.conf
+      - /home/dev/PycharmProjects/racetic/WIP/logs/:/tmp/logs/

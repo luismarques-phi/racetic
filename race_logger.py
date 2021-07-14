@@ -5,7 +5,8 @@ import traceback
 from typing import Any
 
 log_format = '[%(asctime)s][%(levelname)s][%(name)s] %(message)s'
-date_format = '%Y-%m-%d %H:%M:%S,%f'
+# date_format = '%Y-%m-%d %H:%M:%S,%f'
+date_format = None
 
 
 class MyFormatter(logging.Formatter):
@@ -17,7 +18,7 @@ class MyFormatter(logging.Formatter):
             s = ct.strftime(datefmt)
         else:
             t = ct.strftime("%Y-%m-%d %H:%M:%S")
-            s = "%s,%06d" % (t, record.msecs * 1000)
+            s = "%s,%03d" % (t, record.msecs)
         return s
 
 

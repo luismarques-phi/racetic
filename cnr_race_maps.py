@@ -1,3 +1,5 @@
+import os
+
 import boto3
 from botocore import UNSIGNED
 from botocore.config import Config
@@ -6,10 +8,6 @@ from process.edc_action import EDCAction
 from process.edc_client import EDCClient
 from process.product_source import FileSystemSource
 from race_logger import RaceLogger
-
-# collection: dev_lm_racetic
-# bucket: dev-lm-racetic
-
 
 if __name__ == '__main__':
 
@@ -35,18 +33,6 @@ if __name__ == '__main__':
 
     if folder[-1] != '/':
         folder += '/'
-
-    # # TODO DELETE
-    # chl_collection_id = "fa331cca-5be2-4736-8030-793af55c0ef1"
-    # chl_band = "chl"
-    # chl_folder = "N3"
-    # tsmnn_collection_id = "45ce0fb2-fdaf-481e-b834-f728a8677e59"
-    # tsmnn_band = "tsmnn"
-    # tsmnn_folder = "N3-tsmnn"
-    # times = ""
-    # search_dir = "CNR"
-    # file_dir = "/sftp/CNR/incoming/race/"
-    # tmp_data_dir = "/home/linux/scripts/CNR/maps/"
     # for fileTocopy in $(cat ${list_to_update})
     # do
     # 	sudo cp ${file_dir}$fileTocopy ${tmp_data_dir}
@@ -87,7 +73,7 @@ if __name__ == '__main__':
         logger.info(f'IMPORTING_START {indicator_key=} {file.id=}')
         success, message = action.execute(file)
         logger.info(f'IMPORTING_END {indicator_key=} {file.id=} {success=} {message=}')
-        # os.rename(os.path.join(file.root_location, file.id), os.path.join(target_path, file.id))
+        os.rename(os.path.join(file.root_location, file.id), os.path.join(target_path, file.id))
 
     logger.info(f'END {indicator_key=}')
 
