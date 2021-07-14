@@ -33,17 +33,20 @@ class EDCAction(Action):
         #       {
         #          "Effect": "Allow",
         #          "Principal": "*",
-        #          "Action": "s3:*",
-        #          "Resource": "arn:aws:s3:::dev-lm-racetic"
-        #       },
-        #       {
-        #          "Effect": "Allow",
-        #          "Principal": "*",
-        #          "Action": "s3:*",
-        #          "Resource": "arn:aws:s3:::dev-lm-racetic/*"
+        #          "Action": [
+        #             "s3:PutObject",
+        #             "s3:PutObjectAcl",
+        #             "s3:ListBucket",
+        #             ],
+        #          "Resource": [
+        #               "arn:aws:s3:::dev-lm-racetic",
+        #               "arn:aws:s3:::dev-lm-racetic/*"
+        #           ]
         #       }
         #    ]
         # }
+
+        #Or more generic: "Action": "s3:*",
 
         bucket = self.aws_session.Bucket(self.aws_bucket)
         if self.aws_key_prefix:

@@ -6,5 +6,5 @@ services:
     extra_hosts:
       - "elasticsearch:185.178.84.56"
     volumes:
-      - /home/dev/PycharmProjects/racetic/elk_setup/pipeline_logstash.conf:/usr/share/logstash/pipeline/pipeline_logstash.conf
-      - /home/dev/PycharmProjects/racetic/WIP/logs/:/tmp/logs/
+      - ./pipeline_logstash.conf:/usr/share/logstash/pipeline/pipeline_logstash.conf
+      - ../logs/:/tmp/logs/

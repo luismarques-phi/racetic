@@ -1,6 +1,6 @@
+import os
 from argparse import ArgumentParser
 from configparser import RawConfigParser
-import os
 
 import boto3
 from botocore import UNSIGNED
@@ -26,7 +26,8 @@ if __name__ == '__main__':
                         help='Specify the target folder, for where the files move once processed', required=True)
     parser.add_argument("--indicator", type=str,
                         help="Specify the key for which the monitoring system will group the results", required=True)
-    parser.add_argument("--edc_collection_id", type=str, help="Specify EDC Collection to where files are ingested", required=True)
+    parser.add_argument("--edc_collection_id", type=str, help="Specify EDC Collection to where files are ingested",
+                        required=True)
     parser.add_argument("--band", type=str, help="Specify band found in the filename", required=True)
     parser.add_argument("--aws_folder", type=str, help="Specify AWS folder to be used inside bucket", required=True)
     parser.add_argument("--aws_bucket", type=str, help="Specify AWS bucket to be used", required=True)
@@ -94,12 +95,19 @@ if __name__ == '__main__':
                                       filter_contains=filter_contains)
     files_to_process = product_source.get_files()
 
+    count_ok = 0
+    count_nok = 0
+
     logger.info(f'START {indicator_key=} files_to_process={len(files_to_process)}')
 
     for file in files_to_process:
         logger.info(f'IMPORTING_START {indicator_key=} {file.id=}')
         success, message = action.execute(file)
         logger.info(f'IMPORTING_END {indicator_key=} {file.id=} {success=} {message=}')
+        if success:
+            count_ok += 1
+        else:
+            count_nok += 1
         os.rename(os.path.join(file.root_location, file.id), os.path.join(target_path, file.id))
 
-    logger.info(f'END {indicator_key=}')
+    logger.info(f'END {indicator_key=} files_to_process={len(files_to_process)} ok={count_ok} nok={count_nok}')

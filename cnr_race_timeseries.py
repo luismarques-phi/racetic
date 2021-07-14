@@ -51,12 +51,19 @@ if __name__ == '__main__':
     product_source = FileSystemSource(root_path=root_path, filter_extension=filter_extension)
     files_to_process = product_source.get_files()
 
+    count_ok = 0
+    count_nok = 0
+
     logger.info(f'START {indicator_key=} files_to_process={len(files_to_process)}')
 
     for file in files_to_process:
         logger.info(f'IMPORTING_START {indicator_key=} {file.id=}')
         success, message = action.execute(file)
         logger.info(f'IMPORTING_END {indicator_key=} {file.id=} {success=} {message=}')
+        if success:
+            count_ok += 1
+        else:
+            count_nok += 1
         os.rename(os.path.join(file.root_location, file.id), os.path.join(target_path, file.id))
 
-    logger.info(f'END {indicator_key=}')
+    logger.info(f'END {indicator_key=} files_to_process={len(files_to_process)} ok={count_ok} nok={count_nok}')
