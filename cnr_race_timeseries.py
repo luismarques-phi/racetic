@@ -1,4 +1,3 @@
-
 import os
 from argparse import ArgumentParser
 from configparser import RawConfigParser
@@ -62,8 +61,8 @@ if __name__ == '__main__':
         logger.info(f'IMPORTING_END {indicator_key=} {file.id=} {success=} {message=}')
         if success:
             count_ok += 1
+            os.rename(os.path.join(file.root_location, file.id), os.path.join(target_path, file.id))
         else:
             count_nok += 1
-        os.rename(os.path.join(file.root_location, file.id), os.path.join(target_path, file.id))
 
     logger.info(f'END {indicator_key=} files_to_process={len(files_to_process)} ok={count_ok} nok={count_nok}')

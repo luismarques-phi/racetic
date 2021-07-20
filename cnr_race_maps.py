@@ -3,8 +3,6 @@ from argparse import ArgumentParser
 from configparser import RawConfigParser
 
 import boto3
-from botocore import UNSIGNED
-from botocore.config import Config
 
 from process.edc_action import EDCAction
 from process.edc_client import EDCClient
@@ -62,27 +60,20 @@ if __name__ == '__main__':
     band = args.band
     folder = args.aws_folder
 
-    aws_bucket = args.aws_bucket
-
     if folder[-1] != '/':
         folder += '/'
-    # for fileTocopy in $(cat ${list_to_update})
-    # do
-    # 	sudo cp ${file_dir}$fileTocopy ${tmp_data_dir}
-    # 	sudo chown linux:linux ${tmp_data_dir}$fileTocopy
-    # done
 
-    # contains the list CNR_ftp_chl.txt, is the path to this file ftp_chl_source
-
-    resource = boto3.resource('s3', config=Config(signature_version=UNSIGNED), region_name=region_name,
-                              aws_access_key_id=aws_access_key_id, aws_secret_access_key=aws_secret_access_key,
+    resource = boto3.resource('s3', region_name=region_name,
+                              aws_access_key_id=aws_access_key_id,
+                              aws_secret_access_key=aws_secret_access_key,
                               endpoint_url=aws_endpoint)
+
+    aws_bucket = resource.Bucket(args.aws_bucket)
 
     edc_client = EDCClient(client_id, client_secret, token_url, base_url)
 
     try:
         action = EDCAction(aws_bucket=aws_bucket,
-                           aws_session=resource,
                            aws_key_prefix=folder,
                            band=band,
                            edc_client=edc_client,
@@ -106,8 +97,8 @@ if __name__ == '__main__':
         logger.info(f'IMPORTING_END {indicator_key=} {file.id=} {success=} {message=}')
         if success:
             count_ok += 1
+            os.rename(os.path.join(file.root_location, file.id), os.path.join(target_path, file.id))
         else:
             count_nok += 1
-        os.rename(os.path.join(file.root_location, file.id), os.path.join(target_path, file.id))
 
     logger.info(f'END {indicator_key=} files_to_process={len(files_to_process)} ok={count_ok} nok={count_nok}')

@@ -1,3 +1,6 @@
+import json
+import time
+
 from oauthlib.oauth2 import BackendApplicationClient
 from requests_oauthlib import OAuth2Session
 
@@ -21,3 +24,14 @@ class EDCClient:
     def create_tile(self, edc_collection_id: str, path: str, sensing_time: str):
         request = {"path": path, "sensingTime": sensing_time}
         return self.oauth.post(url=self.base_url + f"/byoc/collections/{edc_collection_id}/tiles", json=request)
+
+    def wait_for_status(self, edc_collection_id, tile_id):
+        status = None
+        tile = {}
+        while status is None or status in {'WAITING', 'QUEUED'}:
+            response = self.oauth.get(url=self.base_url + f"/byoc/collections/{edc_collection_id}/tiles/{tile_id}")
+            tile = response.json()['data']
+            status = tile['status']
+            if status in {'WAITING', 'QUEUED'}:
+                time.sleep(1)
+        return status == "INGESTED", json.dumps(tile)
