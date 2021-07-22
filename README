@@ -1,0 +1,20 @@
+/home/dev/PycharmProjects/racetic/cnr_race_maps.py \
+--path /home/dev/PycharmProjects/racetic/WIP/CNR \
+--type .tif \
+--filter tsmnn \
+--archive /home/dev/PycharmProjects/racetic/WIP/completed \
+--indicator cnr_race_tsmnn_maps_on_edc_bucket \
+--config /home/dev/PycharmProjects/racetic/maps_cred.cfg \
+--edc_collection_id 45cd0e05-8fca-47b8-aba7-965ddb12ed71 \
+--band tsmnn \
+--aws_folder DEV-N3-tsmnn \
+--aws_bucket edc-ec-dashboard
+
+/home/dev/PycharmProjects/racetic/cnr_race_timeseries.py \
+--path /home/dev/PycharmProjects/racetic/WIP/CNR \
+--type .csv \
+--database eodash_stage \
+--table N3_stage_LM \
+--archive /home/dev/PycharmProjects/racetic/WIP/completed \
+--indicator cnr_race_n3_timeseries \
+--config /home/dev/PycharmProjects/racetic/timeseries_cred.cfg
